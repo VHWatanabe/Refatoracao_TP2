@@ -16,14 +16,32 @@ public class Parrot {
 
     public double getSpeed() {
         return switch (type) {
-            case EUROPEAN -> getBaseSpeed();
-            case AFRICAN -> Math.max(0, getBaseSpeed() - getLoadFactor() * numberOfCoconuts);
-            case NORWEGIAN_BLUE -> (isNailed) ? 0 : getBaseSpeed(voltage);
+            case EUROPEAN -> calculateEuropeanSpeed();
+            case AFRICAN -> calculateAfricanSpeed();
+            case NORWEGIAN_BLUE -> calculateNorwegianBlueSpeed();
         };
     }
 
+    private double calculateEuropeanSpeed() {
+        return getBaseSpeed();
+    }
+
+    private double calculateAfricanSpeed() {
+        double loadFactor = getLoadFactor();
+        double speed = getBaseSpeed() - loadFactor * numberOfCoconuts;
+        return Math.max(0, speed);
+    }
+
+    private double calculateNorwegianBlueSpeed() {
+        if (isNailed) {
+            return 0;
+        }
+        return getBaseSpeed(voltage);
+    }
+
     private double getBaseSpeed(double voltage) {
-        return Math.min(24.0, voltage * getBaseSpeed());
+        double speed = voltage * getBaseSpeed();
+        return Math.min(24.0, Math.max(0.0, speed));
     }
 
     private double getLoadFactor() {

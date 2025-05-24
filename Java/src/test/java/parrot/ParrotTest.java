@@ -3,127 +3,100 @@ package parrot;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import parrot.ParrotTypeEnum;
-
 public class ParrotTest {
 
+    // --- EUROPEAN PARROT ---
+
     @Test
-    public void getSpeedOfEuropeanParrot() {
+    public void europeanParrot_hasBaseSpeed() {
         Parrot parrot = new Parrot(ParrotTypeEnum.EUROPEAN, 0, 0, false);
-        assertEquals(12.0, parrot.getSpeed(), 0.0);
-    }
-    @Test
-    public void getSpeedOfAfricanParrot_With_One_Coconut() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 1, 0, false);
-        assertEquals(3.0, parrot.getSpeed(), 0.0);
+        assertEquals(12.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void getSpeedOfAfricanParrot_With_Two_Coconuts() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 2, 0, false);
-        assertEquals(0.0, parrot.getSpeed(), 0.0);
+    public void europeanParrot_cryIsCorrect() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.EUROPEAN, 0, 0, false);
+        assertEquals("Sqoork!", parrot.getCry());
     }
 
+    // --- AFRICAN PARROT ---
+
     @Test
-    public void getSpeedOfAfricanParrot_With_No_Coconuts() {
+    public void africanParrot_noCoconuts_hasBaseSpeed() {
         Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 0, 0, false);
-        assertEquals(12.0, parrot.getSpeed(), 0.0);
+        assertEquals(12.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void getSpeedNorwegianBlueParrot_nailed() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 1.5, true);
-        assertEquals(0.0, parrot.getSpeed(), 0.0);
-    }
-
-    @Test
-    public void getSpeedNorwegianBlueParrot_not_nailed() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 1.5, false);
-        assertEquals(18.0, parrot.getSpeed(), 0.0);
-    }
-
-    @Test
-    public void getSpeedNorwegianBlueParrot_not_nailed_high_voltage() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 4, false);
-        assertEquals(24.0, parrot.getSpeed(), 0.0);
-    }
-
-    @Test
-    public void getCryOfEuropeanParrot() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.EUROPEAN, 0, 0, false);
-        assertEquals("Sqoork!", parrot.getCry());
-    }
-
-    @Test
-    public void getCryOfAfricanParrot() {
+    public void africanParrot_oneCoconut_hasReducedSpeed() {
         Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 1, 0, false);
+        assertEquals(3.0, parrot.getSpeed(), 0.001);
+    }
+
+    @Test
+    public void africanParrot_twoCoconuts_speedZero() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 2, 0, false);
+        assertEquals(0.0, parrot.getSpeed(), 0.001);
+    }
+
+    @Test
+    public void africanParrot_negativeCoconuts_doesNotReduceSpeed() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, -10, 0, false);
+        assertTrue(parrot.getSpeed() >= 12.0);
+    }
+
+    @Test
+    public void africanParrot_manyCoconuts_speedNotNegative() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 1000, 0, false);
+        assertTrue(parrot.getSpeed() >= 0.0);
+    }
+
+    @Test
+    public void africanParrot_cryIsCorrect() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 3, 0, false);
         assertEquals("Sqaark!", parrot.getCry());
     }
+
+    // --- NORWEGIAN BLUE PARROT ---
+
     @Test
-    public void getCryOfNorwegianBlueHighVoltage() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 4, false);
-        assertEquals("Bzzzzzz", parrot.getCry());
+    public void norwegianBlue_nailed_speedZero() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 3.0, true);
+        assertEquals(0.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void getCryOfNorwegianBlueNoVoltage() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 0, false);
-        assertEquals("...", parrot.getCry());
-    }
-
-    //NOVOS TESTES A PARTIR DAQUI
-
-    @Test
-    public void testSpeedZeroCoconuts() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 0, 0.0, false);
-        assertEquals(12.0, parrot.getSpeed(), 0.0001, "Velocidade com 0 cocos deve ser base");
+    public void norwegianBlue_notNailed_voltage15_speedCorrect() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 1.5, false);
+        assertEquals(18.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void testSpeedNegativeCoconuts() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, -10, 0.0, false);
-        assertTrue(parrot.getSpeed() >= 12.0, "Cocos negativos devem ser tratados (não reduzir velocidade)");
+    public void norwegianBlue_notNailed_highVoltage_speedCapped() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 4.0, false);
+        assertEquals(24.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void testSpeedHighVoltage() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 100.0, false);
-        assertEquals(24.0, parrot.getSpeed(), 0.0001, "Velocidade máxima para alta voltagem é 24");
-    }
-
-    @Test
-    public void testNegativeVoltage() {
+    public void norwegianBlue_notNailed_negativeVoltage_allowsNegativeSpeed() {
         Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, -5.0, false);
-        assertTrue(parrot.getSpeed() < 0, "Voltagem negativa gera velocidade negativa (atualmente)");
-    }
-
-
-    @Test
-    public void testHighNumberOfCoconuts() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 1000, 0.0, false);
-        assertTrue(parrot.getSpeed() >= 0, "Mesmo com muitos cocos, a velocidade não deve ser negativa");
+        assertEquals(0.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void testEuropeanParrotCry() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.EUROPEAN, 0, 0.0, false);
-        assertEquals("Sqoork!", parrot.getCry());
+    public void norwegianBlue_voltageAboveCap_speedMax24() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 100.0, false);
+        assertEquals(24.0, parrot.getSpeed(), 0.001);
     }
 
     @Test
-    public void testAfricanParrotCry() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.AFRICAN, 0, 0.0, false);
-        assertEquals("Sqaark!", parrot.getCry());
-    }
-
-    @Test
-    public void testNorwegianBlueWithVoltageCry() {
-        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 1.0, false);
+    public void norwegianBlue_cryWithVoltage() {
+        Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 2.0, false);
         assertEquals("Bzzzzzz", parrot.getCry());
     }
 
     @Test
-    public void testNorwegianBlueNoVoltageCry() {
+    public void norwegianBlue_cryNoVoltage() {
         Parrot parrot = new Parrot(ParrotTypeEnum.NORWEGIAN_BLUE, 0, 0.0, false);
         assertEquals("...", parrot.getCry());
     }
