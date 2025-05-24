@@ -2,14 +2,7 @@ package parrot;
 
 public class Parrot {
 
-    private static final double MAX_NORWEGIAN_BLUE_SPEED = 24.0;
-    private static final double BASE_SPEED = 12.0;
-    private static final double AFRICAN_LOAD_FACTOR = 9.0;
-
-    private final ParrotTypeEnum type;
-    private final int numberOfCoconuts;
-    private final double voltage;
-    private final boolean isNailed;
+    private final ParrotBehavior behavior;
 
     public static class Builder {
         private ParrotTypeEnum type;
@@ -38,56 +31,24 @@ public class Parrot {
         }
 
         public Parrot build() {
-            return new Parrot(type, numberOfCoconuts, voltage, isNailed);
+            ParrotBehavior behavior = switch(type) {
+                case EUROPEAN -> new EuropeanParrotBehavior();
+                case AFRICAN -> new AfricanParrotBehavior(numberOfCoconuts);
+                case NORWEGIAN_BLUE -> new NorwegianBlueParrotBehavior(voltage, isNailed);
+            };
+            return new Parrot(behavior);
         }
     }
 
-    private Parrot(ParrotTypeEnum type, int numberOfCoconuts, double voltage, boolean isNailed) {
-        this.type = type;
-        this.numberOfCoconuts = numberOfCoconuts;
-        this.voltage = voltage;
-        this.isNailed = isNailed;
+    private Parrot(ParrotBehavior behavior) {
+        this.behavior = behavior;
     }
 
     public double getSpeed() {
-        return switch (type) {
-            case EUROPEAN -> calculateEuropeanSpeed();
-            case AFRICAN -> calculateAfricanSpeed();
-            case NORWEGIAN_BLUE -> calculateNorwegianBlueSpeed();
-        };
+        return behavior.getSpeed();
     }
 
     public String getCry() {
-        return switch (type) {
-            case EUROPEAN -> "Sqoork!";
-            case AFRICAN -> "Sqaark!";
-            case NORWEGIAN_BLUE -> calculateNorwegianBlueCry();
-        };
-    }
-
-    private double calculateEuropeanSpeed() {
-        return BASE_SPEED;
-    }
-
-    private double calculateAfricanSpeed() {
-        double loadPenalty = AFRICAN_LOAD_FACTOR * numberOfCoconuts;
-        double adjustedSpeed = BASE_SPEED - loadPenalty;
-        return Math.max(0, adjustedSpeed);
-    }
-
-    private double calculateNorwegianBlueSpeed() {
-        if (isNailed) {
-            return 0;
-        }
-        double speed = getBaseSpeed(voltage);
-        return speed < 0 ? 0 : speed;
-    }
-
-    private double getBaseSpeed(double voltage) {
-        return Math.min(MAX_NORWEGIAN_BLUE_SPEED, BASE_SPEED * voltage);
-    }
-
-    private String calculateNorwegianBlueCry() {
-        return voltage > 0 ? "Bzzzzzz" : "...";
+        return behavior.getCry();
     }
 }
